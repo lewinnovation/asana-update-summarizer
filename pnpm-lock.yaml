@@ -14,9 +14,6 @@ importers:
       clipboardy:
         specifier: ^5.0.0
         version: 5.0.0
-      marked:
-        specifier: ^16.3.0
-        version: 16.3.0
       openapi-fetch:
         specifier: ^0.14.1
         version: 0.14.1
@@ -517,11 +514,6 @@ packages:
 
   json-schema-traverse@1.0.0:
     resolution: {integrity: sha512-NM8/P9n3XjXhIZn1lLhkFaACTOURQXjWhV4BA/RnOv8xvgqtqpAX9IO4mRQxSx1Rlo4tqzeqb0sOlruaOy3dug==}
-
-  marked@16.3.0:
-    resolution: {integrity: sha512-K3UxuKu6l6bmA5FUwYho8CfJBlsUWAooKtdGgMcERSpF7gcBUrCGsLH7wDaaNOzwq18JzSUDyoEb/YsrqMac3w==}
-    engines: {node: '>= 20'}
-    hasBin: true
 
   minimatch@5.1.6:
     resolution: {integrity: sha512-lKwV/1brpG6mBUFHtb7NUmtABCb2WZZmm2wNiOA5hAb8VdCS4B3dtMWyvcoViccwAW/COERjXLt0zP1zXUN26g==}
@@ -1076,8 +1068,6 @@ snapshots:
       argparse: 2.0.1
 
   json-schema-traverse@1.0.0: {}
-
-  marked@16.3.0: {}
 
   minimatch@5.1.6:
     dependencies:

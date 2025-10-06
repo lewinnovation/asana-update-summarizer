@@ -1,5 +1,5 @@
 {
-  "name": "asana-update-summarizer",
+  "name": "@lewinnovation/asana-update-summarizer",
   "version": "1.0.0",
   "description": "A command-line tool to help you generate a summary of your work from Asana.",
   "main": "dist/index.js",
