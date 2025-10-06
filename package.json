@@ -1,0 +1,47 @@
+{
+  "name": "asana-update-summarizer",
+  "version": "1.0.0",
+  "description": "A command-line tool to help you generate a summary of your work from Asana.",
+  "main": "dist/index.js",
+  "bin": {
+    "asana-update-summarizer": "dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "scripts": {
+    "start": "tsx index.ts",
+    "build": "tsc",
+    "prepublishOnly": "pnpm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lewinnovation/asana-update-summarizer.git"
+  },
+  "keywords": [
+    "asana",
+    "cli"
+  ],
+  "author": "Vidur Butalia <vidurbutalia@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lewinnovation/asana-update-summarizer/issues"
+  },
+  "homepage": "https://github.com/lewinnovation/asana-update-summarizer#readme",
+  "packageManager": "pnpm@10.15.1",
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "@types/node": "^24.7.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^7.8.6",
+    "clipboardy": "^5.0.0",
+    "openapi-fetch": "^0.14.1",
+    "openapi-typescript": "^7.9.1",
+    "tsx": "^4.20.6"
+  }
+}
