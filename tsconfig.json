@@ -42,5 +42,5 @@
     "skipLibCheck": true,
     "esModuleInterop": true
   },
-  "include": ["index.ts", "asana-api.d.ts"]
+  "include": ["index.tsx", "asana-api.d.ts"]
 }

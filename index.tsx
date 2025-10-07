@@ -151,7 +151,7 @@ const App = () => {
   }, [state]);
 
   useEffect(() => {
-    if (state.name === "tasks" && me) {
+    if (state.name === "tasks" && me?.gid) {
       state.client
         .GET("/tasks", {
           params: {
@@ -264,11 +264,15 @@ const App = () => {
 
   const handlePostComment = (item: { value: string }) => {
     if (state.name === "postComment") {
+      const task = state.tasks[state.currentTaskIndex];
+      if (!task) {
+        return;
+      }
       if (item.value === "yes") {
         state.client.POST("/tasks/{task_gid}/stories", {
           params: {
             path: {
-              task_gid: state.tasks[state.currentTaskIndex].gid!,
+              task_gid: task.gid!,
             },
           },
           body: {
@@ -281,7 +285,7 @@ const App = () => {
       const newWorkedOnTasks = [
         ...state.workedOnTasks,
         {
-          task: state.tasks[state.currentTaskIndex],
+          task,
           status: state.status,
           comment: state.comment,
         },
@@ -316,7 +320,11 @@ const App = () => {
     return (
       <Box>
         <Text>Please enter your Asana Personal Access Token: </Text>
-        <TextInput value={pat} onSubmit={handlePatSubmit} />
+        <TextInput
+          value={pat}
+          onChange={setPat}
+          onSubmit={handlePatSubmit}
+        />
       </Box>
     );
   }
@@ -339,6 +347,9 @@ const App = () => {
 
   if (state.name === "processTasks") {
     const task = state.tasks[state.currentTaskIndex];
+    if (!task) {
+      return <Text>Loading...</Text>;
+    }
     const project = task.memberships?.[0]?.project?.name || "No Project";
     const section = task.memberships?.[0]?.section?.name || "No Section";
     return (
@@ -362,7 +373,11 @@ const App = () => {
     return (
       <Box>
         <Text>Status: </Text>
-        <TextInput value="" onSubmit={handleStatusSubmit} />
+        <TextInput
+          value=""
+          onChange={() => {}}
+          onSubmit={handleStatusSubmit}
+        />
       </Box>
     );
   }
@@ -371,7 +386,11 @@ const App = () => {
     return (
       <Box>
         <Text>Comment: </Text>
-        <TextInput value="" onSubmit={handleCommentSubmit} />
+        <TextInput
+          value=""
+          onChange={() => {}}
+          onSubmit={handleCommentSubmit}
+        />
       </Box>
     );
   }
