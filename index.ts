@@ -1,5 +1,6 @@
 import { confirm, input, select } from "@inquirer/prompts";
 import clipboardy from "clipboardy";
+import { exit } from "node:process";
 import createClient from "openapi-fetch";
 import type { components, paths } from "./asana-api.d.ts";
 
@@ -26,7 +27,7 @@ async function main() {
 
   if (!personalAccessToken) {
     console.error("Asana Personal Access Token is required.");
-    return;
+    exit(1);
   }
 
   const client = createClient<paths>({
@@ -183,11 +184,13 @@ async function main() {
       clipboardy.writeSync(table);
       console.log("Copied to clipboard!");
     }
+    exit(0);
   } catch (error) {
     console.error(
       "Error connecting to Asana. Please check your Personal Access Token.",
       error,
     );
+    exit(1);
   }
 }
 
