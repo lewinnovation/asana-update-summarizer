@@ -358,7 +358,6 @@ const App = () => {
           Status for "{task.name}" ({project} / {section}):{" "}
         </Text>
         <TextInput
-          onChange={() => {}}
           onSubmit={handleStatusSubmit}
           suggestions={["Complete", "In Progress", "Waiting"]}
         />
@@ -378,7 +377,7 @@ const App = () => {
         <Text>
           Comment for "{task.name}" ({project} / {section}):{" "}
         </Text>
-        <TextInput onChange={() => {}} onSubmit={handleCommentSubmit} />
+        <TextInput onSubmit={handleCommentSubmit} />
       </Box>
     );
   }
