@@ -99,7 +99,7 @@ const getTaskUrl = (task: Task) => {
 const App = () => {
   const [state, setState] = useState<AppState>({ name: "pat" });
   const [pat, setPat] = useState(
-    process.env.ASANA_PAT || process.env.ASANA_TOKEN || "",
+    process.env.ASANA_PAT || process.env.ASANA_TOKEN || ""
   );
   const [me, setMe] = useState<components["schemas"]["UserCompact"]>();
   const [workspaces, setWorkspaces] = useState<
@@ -129,7 +129,7 @@ const App = () => {
         })
         .catch((err) => {
           setError(
-            `Error connecting to Asana. Please check your Personal Access Token. ${err.message}`,
+            `Error connecting to Asana. Please check your Personal Access Token. ${err.message}`
           );
         });
     }
@@ -210,7 +210,7 @@ const App = () => {
   const handleTasksSelect = (values: string[]) => {
     if (state.name === "selectTasks") {
       const selectedTasks = state.tasks.filter((task) =>
-        values.includes(task.gid!),
+        values.includes(task.gid!)
       );
       setState({
         name: "status",
@@ -357,7 +357,11 @@ const App = () => {
         <Text>
           Status for "{task.name}" ({project} / {section}):{" "}
         </Text>
-        <TextInput onChange={() => {}} onSubmit={handleStatusSubmit} />
+        <TextInput
+          onChange={() => {}}
+          onSubmit={handleStatusSubmit}
+          suggestions={["Complete", "In Progress", "Waiting"]}
+        />
       </Box>
     );
   }
