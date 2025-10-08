@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { render, Box, Text } from "ink";
-import TextInput from "ink-text-input";
-import SelectInput from "ink-select-input";
+import { MultiSelect, Select, TextInput } from "@inkjs/ui";
 import clipboardy from "clipboardy";
 import { exit } from "node:process";
 import createClient from "openapi-fetch";
@@ -35,23 +34,21 @@ type AppState =
       workspace: string;
     }
   | {
-      name: "processTasks";
+      name: "selectTasks";
       client: ReturnType<typeof createClient<paths>>;
       tasks: Task[];
-      workedOnTasks: WorkedOnTask[];
-      currentTaskIndex: number;
     }
   | {
       name: "status";
       client: ReturnType<typeof createClient<paths>>;
-      tasks: Task[];
+      selectedTasks: Task[];
       workedOnTasks: WorkedOnTask[];
       currentTaskIndex: number;
     }
   | {
       name: "comment";
       client: ReturnType<typeof createClient<paths>>;
-      tasks: Task[];
+      selectedTasks: Task[];
       workedOnTasks: WorkedOnTask[];
       currentTaskIndex: number;
       status: string;
@@ -59,7 +56,7 @@ type AppState =
   | {
       name: "postComment";
       client: ReturnType<typeof createClient<paths>>;
-      tasks: Task[];
+      selectedTasks: Task[];
       workedOnTasks: WorkedOnTask[];
       currentTaskIndex: number;
       status: string;
@@ -102,7 +99,7 @@ const getTaskUrl = (task: Task) => {
 const App = () => {
   const [state, setState] = useState<AppState>({ name: "pat" });
   const [pat, setPat] = useState(
-    process.env.ASANA_PAT || process.env.ASANA_TOKEN || ""
+    process.env.ASANA_PAT || process.env.ASANA_TOKEN || "",
   );
   const [me, setMe] = useState<components["schemas"]["UserCompact"]>();
   const [workspaces, setWorkspaces] = useState<
@@ -132,7 +129,7 @@ const App = () => {
         })
         .catch((err) => {
           setError(
-            `Error connecting to Asana. Please check your Personal Access Token. ${err.message}`
+            `Error connecting to Asana. Please check your Personal Access Token. ${err.message}`,
           );
         });
     }
@@ -185,11 +182,9 @@ const App = () => {
               return modifiedDate >= sevenDaysAgo;
             });
             setState({
-              name: "processTasks",
+              name: "selectTasks",
               client: state.client,
               tasks: recent,
-              workedOnTasks: [],
-              currentTaskIndex: 0,
             });
           } else {
             setError("Could not fetch tasks.");
@@ -202,36 +197,28 @@ const App = () => {
     setPat(value);
   };
 
-  const handleWorkspaceSelect = (item: { value: string }) => {
+  const handleWorkspaceSelect = (value: string) => {
     if (state.name === "workspaces") {
       setState({
         name: "tasks",
         client: state.client,
-        workspace: item.value,
+        workspace: value,
       });
     }
   };
 
-  const handleIncludeTask = (item: { value: string }) => {
-    if (state.name === "processTasks") {
-      if (item.value === "yes") {
-        setState({
-          name: "status",
-          client: state.client,
-          tasks: state.tasks,
-          workedOnTasks: state.workedOnTasks,
-          currentTaskIndex: state.currentTaskIndex,
-        });
-      } else {
-        if (state.currentTaskIndex === state.tasks.length - 1) {
-          setState({ name: "summary", workedOnTasks: state.workedOnTasks });
-        } else {
-          setState({
-            ...state,
-            currentTaskIndex: state.currentTaskIndex + 1,
-          });
-        }
-      }
+  const handleTasksSelect = (values: string[]) => {
+    if (state.name === "selectTasks") {
+      const selectedTasks = state.tasks.filter((task) =>
+        values.includes(task.gid!),
+      );
+      setState({
+        name: "status",
+        client: state.client,
+        selectedTasks,
+        workedOnTasks: [],
+        currentTaskIndex: 0,
+      });
     }
   };
 
@@ -240,7 +227,7 @@ const App = () => {
       setState({
         name: "comment",
         client: state.client,
-        tasks: state.tasks,
+        selectedTasks: state.selectedTasks,
         workedOnTasks: state.workedOnTasks,
         currentTaskIndex: state.currentTaskIndex,
         status: value,
@@ -253,7 +240,7 @@ const App = () => {
       setState({
         name: "postComment",
         client: state.client,
-        tasks: state.tasks,
+        selectedTasks: state.selectedTasks,
         workedOnTasks: state.workedOnTasks,
         currentTaskIndex: state.currentTaskIndex,
         status: state.status,
@@ -262,13 +249,13 @@ const App = () => {
     }
   };
 
-  const handlePostComment = (item: { value: string }) => {
+  const handlePostComment = (value: string) => {
     if (state.name === "postComment") {
-      const task = state.tasks[state.currentTaskIndex];
+      const task = state.selectedTasks[state.currentTaskIndex];
       if (!task) {
         return;
       }
-      if (item.value === "yes") {
+      if (value === "yes") {
         state.client.POST("/tasks/{task_gid}/stories", {
           params: {
             path: {
@@ -290,13 +277,13 @@ const App = () => {
           comment: state.comment,
         },
       ];
-      if (state.currentTaskIndex === state.tasks.length - 1) {
+      if (state.currentTaskIndex === state.selectedTasks.length - 1) {
         setState({ name: "summary", workedOnTasks: newWorkedOnTasks });
       } else {
         setState({
-          name: "processTasks",
+          name: "status",
           client: state.client,
-          tasks: state.tasks,
+          selectedTasks: state.selectedTasks,
           workedOnTasks: newWorkedOnTasks,
           currentTaskIndex: state.currentTaskIndex + 1,
         });
@@ -304,8 +291,8 @@ const App = () => {
     }
   };
 
-  const handleCopyToClipboard = (item: { value: string }) => {
-    if (item.value === "yes" && state.name === "summary") {
+  const handleCopyToClipboard = (value: string) => {
+    if (value === "yes" && state.name === "summary") {
       const table = generateSummaryTable(state.workedOnTasks);
       clipboardy.writeSync(table);
     }
@@ -320,11 +307,7 @@ const App = () => {
     return (
       <Box>
         <Text>Please enter your Asana Personal Access Token: </Text>
-        <TextInput
-          value={pat}
-          onChange={setPat}
-          onSubmit={handlePatSubmit}
-        />
+        <TextInput onChange={setPat} onSubmit={handlePatSubmit} />
       </Box>
     );
   }
@@ -333,9 +316,9 @@ const App = () => {
     return (
       <Box>
         <Text>Select a workspace: </Text>
-        <SelectInput
-          items={workspaces.map((w) => ({ label: w.name!, value: w.gid! }))}
-          onSelect={handleWorkspaceSelect}
+        <Select
+          options={workspaces.map((w) => ({ label: w.name!, value: w.gid! }))}
+          onChange={handleWorkspaceSelect}
         />
       </Box>
     );
@@ -345,8 +328,25 @@ const App = () => {
     return <Text>Fetching tasks...</Text>;
   }
 
-  if (state.name === "processTasks") {
-    const task = state.tasks[state.currentTaskIndex];
+  if (state.name === "selectTasks") {
+    return (
+      <Box>
+        <Text>Select tasks you worked on: </Text>
+        <MultiSelect
+          options={state.tasks.map((task) => ({
+            label: `${task.name} (${
+              task.memberships?.[0]?.project?.name || "No Project"
+            } / ${task.memberships?.[0]?.section?.name || "No Section"})`,
+            value: task.gid!,
+          }))}
+          onSubmit={handleTasksSelect}
+        />
+      </Box>
+    );
+  }
+
+  if (state.name === "status") {
+    const task = state.selectedTasks[state.currentTaskIndex];
     if (!task) {
       return <Text>Loading...</Text>;
     }
@@ -355,56 +355,48 @@ const App = () => {
     return (
       <Box>
         <Text>
-          Add "{task.name}" ({project} / {section}) to the list of tasks worked
-          on today?
+          Status for "{task.name}" ({project} / {section}):{" "}
         </Text>
-        <SelectInput
-          items={[
-            { label: "Yes", value: "yes" },
-            { label: "No", value: "no" },
-          ]}
-          onSelect={handleIncludeTask}
-        />
-      </Box>
-    );
-  }
-
-  if (state.name === "status") {
-    return (
-      <Box>
-        <Text>Status: </Text>
-        <TextInput
-          value=""
-          onChange={() => {}}
-          onSubmit={handleStatusSubmit}
-        />
+        <TextInput onChange={() => {}} onSubmit={handleStatusSubmit} />
       </Box>
     );
   }
 
   if (state.name === "comment") {
+    const task = state.selectedTasks[state.currentTaskIndex];
+    if (!task) {
+      return <Text>Loading...</Text>;
+    }
+    const project = task.memberships?.[0]?.project?.name || "No Project";
+    const section = task.memberships?.[0]?.section?.name || "No Section";
     return (
       <Box>
-        <Text>Comment: </Text>
-        <TextInput
-          value=""
-          onChange={() => {}}
-          onSubmit={handleCommentSubmit}
-        />
+        <Text>
+          Comment for "{task.name}" ({project} / {section}):{" "}
+        </Text>
+        <TextInput onChange={() => {}} onSubmit={handleCommentSubmit} />
       </Box>
     );
   }
 
   if (state.name === "postComment") {
+    const task = state.selectedTasks[state.currentTaskIndex];
+    if (!task) {
+      return <Text>Loading...</Text>;
+    }
+    const project = task.memberships?.[0]?.project?.name || "No Project";
+    const section = task.memberships?.[0]?.section?.name || "No Section";
     return (
       <Box>
-        <Text>Post comment to Asana? </Text>
-        <SelectInput
-          items={[
+        <Text>
+          Post comment to "{task.name}" ({project} / {section})?{" "}
+        </Text>
+        <Select
+          options={[
             { label: "Yes", value: "yes" },
             { label: "No", value: "no" },
           ]}
-          onSelect={handlePostComment}
+          onChange={handlePostComment}
         />
       </Box>
     );
@@ -417,12 +409,12 @@ const App = () => {
         <SummaryTable workedOnTasks={state.workedOnTasks} />
         <Box>
           <Text>Copy markdown output to clipboard? </Text>
-          <SelectInput
-            items={[
+          <Select
+            options={[
               { label: "Yes", value: "yes" },
               { label: "No", value: "no" },
             ]}
-            onSelect={handleCopyToClipboard}
+            onChange={handleCopyToClipboard}
           />
         </Box>
       </Box>
