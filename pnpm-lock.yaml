@@ -20,6 +20,9 @@ importers:
       ink:
         specifier: ^6.3.1
         version: 6.3.1(@types/react@19.2.2)(react@19.2.0)
+      ink-table:
+        specifier: github:brainhubeu/ink-table
+        version: https://codeload.github.com/brainhubeu/ink-table/tar.gz/41d7620e2160e4d685abe375fb0e22db0f9668c7(ink@6.3.1(@types/react@19.2.2)(react@19.2.0))(react@19.2.0)
       openapi-fetch:
         specifier: ^0.14.1
         version: 0.14.1
@@ -395,6 +398,13 @@ packages:
     resolution: {integrity: sha512-Yg7+ztRkqslMAS2iFaU+Oa4KTSidr63OsFGlOrJoW981kIYO3CGCS3wA95P1mUi/IVSJkn0D479KTJpVpvFNuw==}
     engines: {node: '>=18'}
 
+  ink-table@https://codeload.github.com/brainhubeu/ink-table/tar.gz/41d7620e2160e4d685abe375fb0e22db0f9668c7:
+    resolution: {tarball: https://codeload.github.com/brainhubeu/ink-table/tar.gz/41d7620e2160e4d685abe375fb0e22db0f9668c7}
+    version: 0.0.0-development
+    peerDependencies:
+      ink: '>=5.0.0'
+      react: '>=18.0.0'
+
   ink@6.3.1:
     resolution: {integrity: sha512-3wGwITGrzL6rkWsi2gEKzgwdafGn4ZYd3u4oRp+sOPvfoxEHlnoB5Vnk9Uy5dMRUhDOqF3hqr4rLQ4lEzBc2sQ==}
     engines: {node: '>=20'}
@@ -486,6 +496,10 @@ packages:
   npm-run-path@6.0.0:
     resolution: {integrity: sha512-9qny7Z9DsQU8Ou39ERsPU4OZQlSTP47ShQzuKZ6PRXpYLtIFgl/DEBYEXKlvcEa+9tHVcK8CF81Y2V72qaZhWA==}
     engines: {node: '>=18'}
+
+  object-hash@2.2.0:
+    resolution: {integrity: sha512-gScRMn0bS5fH+IuwyIFgnh9zBdo4DV+6GhygmWM9HyNJSgS0hScp1f5vjtm7oIIOiT9trXrShAkLFSc2IqKNgw==}
+    engines: {node: '>= 6'}
 
   onetime@5.1.2:
     resolution: {integrity: sha512-kbpaSSGJTWdAY5KPVeMOKXSrPtr8C8C7wodJbcsd51jRnmD+GZu8Y0VoU6Dm5Z4vWr0Ig/1NKuWRKf7j5aaYSg==}
@@ -959,6 +973,12 @@ snapshots:
 
   index-to-position@1.2.0: {}
 
+  ink-table@https://codeload.github.com/brainhubeu/ink-table/tar.gz/41d7620e2160e4d685abe375fb0e22db0f9668c7(ink@6.3.1(@types/react@19.2.2)(react@19.2.0))(react@19.2.0):
+    dependencies:
+      ink: 6.3.1(@types/react@19.2.2)(react@19.2.0)
+      object-hash: 2.2.0
+      react: 19.2.0
+
   ink@6.3.1(@types/react@19.2.2)(react@19.2.0):
     dependencies:
       '@alcalzone/ansi-tokenize': 0.2.0
@@ -1045,6 +1065,8 @@ snapshots:
     dependencies:
       path-key: 4.0.0
       unicorn-magic: 0.3.0
+
+  object-hash@2.2.0: {}
 
   onetime@5.1.2:
     dependencies:

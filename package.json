@@ -12,7 +12,7 @@
   "type": "module",
   "scripts": {
     "start": "node dist/index.js",
-    "build": "esbuild index.tsx --bundle --platform=node --outfile=dist/index.js --format=esm --external:react --external:ink --external:clipboardy --jsx=automatic",
+    "build": "esbuild index.tsx --bundle --platform=node --outfile=dist/index.js --format=esm --external:react --external:ink --external:clipboardy --external:ink-table --jsx=automatic",
     "prepublishOnly": "pnpm run build",
     "dev": "tsx index.tsx"
   },
@@ -45,6 +45,7 @@
     "@types/react": "^19.2.2",
     "clipboardy": "^5.0.0",
     "ink": "^6.3.1",
+    "ink-table": "github:brainhubeu/ink-table",
     "openapi-fetch": "^0.14.1",
     "openapi-typescript": "^7.9.1",
     "react": "^19.2.0"

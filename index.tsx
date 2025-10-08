@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { render, Box, Text } from "ink";
 import { MultiSelect, Select, TextInput } from "@inkjs/ui";
+import Table from "ink-table";
 import clipboardy from "clipboardy";
 import { exit } from "node:process";
 import createClient from "openapi-fetch";
@@ -65,6 +66,27 @@ type AppState =
   | { name: "summary"; workedOnTasks: WorkedOnTask[] }
   | { name: "exit" };
 
+const generateSummaryTableData = (workedOnTasks: WorkedOnTask[]) => {
+  return workedOnTasks.map((workedOnTask) => {
+    const task = workedOnTask.task;
+    const project = task.memberships?.[0]?.project?.name || "";
+    const section = task.memberships?.[0]?.section?.name || "";
+    const name = task.name || "";
+    const url = getTaskUrl(task);
+    const status = workedOnTask.status;
+    const comment = workedOnTask.comment;
+
+    return {
+      Project: project,
+      Section: section,
+      Name: name,
+      URL: url,
+      Status: status,
+      Comment: comment,
+    };
+  });
+};
+
 const generateSummaryTable = (workedOnTasks: WorkedOnTask[]) => {
   let table = "| Project | Section | Name | URL | Status | Comment |\n";
   table += "|---|---|---|---|---|---|\n";
@@ -85,8 +107,8 @@ const generateSummaryTable = (workedOnTasks: WorkedOnTask[]) => {
 };
 
 const SummaryTable = ({ workedOnTasks }: { workedOnTasks: WorkedOnTask[] }) => {
-  const table = generateSummaryTable(workedOnTasks);
-  return <Text>{table}</Text>;
+  const data = generateSummaryTableData(workedOnTasks);
+  return <Table data={data} />;
 };
 
 const getTaskUrl = (task: Task) => {
