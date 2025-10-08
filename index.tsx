@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { render, Box, Text } from "ink";
-import { MultiSelect, Select, TextInput } from "@inkjs/ui";
+import { MultiSelect, Select, TextInput, Spinner } from "@inkjs/ui";
 import Table from "ink-table";
 import clipboardy from "clipboardy";
 import { exit } from "node:process";
@@ -347,7 +347,12 @@ const App = () => {
   }
 
   if (state.name === "tasks") {
-    return <Text>Fetching tasks...</Text>;
+    return (
+      <Box>
+        <Spinner type="dots" />
+        <Text> Fetching tasks...</Text>
+      </Box>
+    );
   }
 
   if (state.name === "selectTasks") {
@@ -370,7 +375,12 @@ const App = () => {
   if (state.name === "status") {
     const task = state.selectedTasks[state.currentTaskIndex];
     if (!task) {
-      return <Text>Loading...</Text>;
+      return (
+        <Box>
+          <Spinner type="dots" />
+          <Text> Loading...</Text>
+        </Box>
+      );
     }
     const project = task.memberships?.[0]?.project?.name || "No Project";
     const section = task.memberships?.[0]?.section?.name || "No Section";
@@ -390,7 +400,12 @@ const App = () => {
   if (state.name === "comment") {
     const task = state.selectedTasks[state.currentTaskIndex];
     if (!task) {
-      return <Text>Loading...</Text>;
+      return (
+        <Box>
+          <Spinner type="dots" />
+          <Text> Loading...</Text>
+        </Box>
+      );
     }
     const project = task.memberships?.[0]?.project?.name || "No Project";
     const section = task.memberships?.[0]?.section?.name || "No Section";
@@ -407,7 +422,12 @@ const App = () => {
   if (state.name === "postComment") {
     const task = state.selectedTasks[state.currentTaskIndex];
     if (!task) {
-      return <Text>Loading...</Text>;
+      return (
+        <Box>
+          <Spinner type="dots" />
+          <Text> Loading...</Text>
+        </Box>
+      );
     }
     const project = task.memberships?.[0]?.project?.name || "No Project";
     const section = task.memberships?.[0]?.section?.name || "No Section";
@@ -446,7 +466,12 @@ const App = () => {
     );
   }
 
-  return <Text>Loading...</Text>;
+  return (
+    <Box>
+      <Spinner type="dots" />
+      <Text> Loading...</Text>
+    </Box>
+  );
 };
 
 render(<App />);
