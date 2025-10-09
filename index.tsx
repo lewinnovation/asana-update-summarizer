@@ -119,6 +119,7 @@ const getTaskUrl = (task: Task) => {
 };
 
 const App = () => {
+  console.log('App rendering started')
   const [state, setState] = useState<AppState>({ name: "pat" });
   const [pat, setPat] = useState(
     process.env.ASANA_PAT || process.env.ASANA_TOKEN || ""
