@@ -63,6 +63,15 @@ type AppState =
       status: string;
       comment: string;
     }
+  | {
+      name: "postingComment";
+      client: ReturnType<typeof createClient<paths>>;
+      selectedTasks: Task[];
+      workedOnTasks: WorkedOnTask[];
+      currentTaskIndex: number;
+      status: string;
+      comment: string;
+    }
   | { name: "summary"; workedOnTasks: WorkedOnTask[] }
   | { name: "exit" };
 
@@ -171,12 +180,44 @@ const App = () => {
 
   useEffect(() => {
     if (state.name === "tasks" && me?.gid) {
-      state.client
-        .GET("/tasks", {
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      const sevenDaysAgoIso = sevenDaysAgo.toISOString();
+
+      // Fetch assigned tasks
+      const assignedTasksPromise = state.client.GET("/tasks", {
+        params: {
+          query: {
+            workspace: state.workspace,
+            assignee: me.gid!,
+            limit: 100,
+            modified_since: sevenDaysAgoIso,
+            opt_fields: [
+              "name",
+              "notes",
+              "completed",
+              "due_on",
+              "created_at",
+              "modified_at",
+              "tags.name",
+              "memberships.project.name",
+              "memberships.section.name",
+            ],
+          },
+        },
+      });
+
+      // Fetch followed tasks (requires premium)
+      const followedTasksPromise = state.client
+        .GET("/workspaces/{workspace_gid}/tasks/search", {
           params: {
+            path: {
+              workspace_gid: state.workspace,
+            },
             query: {
-              workspace: state.workspace,
-              assignee: me.gid!,
+              "followers.any": me.gid!,
+              limit: 100,
+              "modified_at.after": sevenDaysAgoIso,
               opt_fields: [
                 "name",
                 "notes",
@@ -191,26 +232,67 @@ const App = () => {
             },
           },
         })
-        .then(({ data }) => {
-          if (data?.data) {
-            const tasks = data.data as Task[];
-            const sevenDaysAgo = new Date();
-            sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-            const recent = tasks.filter((task) => {
-              if (!task.modified_at) {
-                return false;
-              }
-              const modifiedDate = new Date(task.modified_at);
-              return modifiedDate >= sevenDaysAgo;
-            });
-            setState({
-              name: "selectTasks",
-              client: state.client,
-              tasks: recent,
-            });
-          } else {
-            setError("Could not fetch tasks.");
+        .then((result) => {
+          // If there's an error response with 402 (Payment Required), return empty data
+          if (result.response?.status === 402) {
+            return { data: { data: [] } };
           }
+          return result;
+        })
+        .catch((err) => {
+          // Handle 402 Payment Required for non-premium users
+          // openapi-fetch may throw errors for HTTP errors in some cases
+          const status =
+            err.status ||
+            err.response?.status ||
+            (err as { response?: { status?: number } })?.response?.status;
+          if (status === 402) {
+            // Return empty array if user doesn't have premium access
+            return { data: { data: [] } };
+          }
+          // Re-throw other errors
+          throw err;
+        });
+
+      Promise.all([assignedTasksPromise, followedTasksPromise])
+        .then(([assignedResult, followedResult]) => {
+          const assignedTasks = (assignedResult.data?.data || []) as Task[];
+          const followedTasks = (followedResult.data?.data || []) as Task[];
+
+          // Merge and deduplicate tasks by gid
+          const taskMap = new Map<string, Task>();
+          assignedTasks.forEach((task) => {
+            if (task.gid) {
+              taskMap.set(task.gid, task);
+            }
+          });
+          followedTasks.forEach((task) => {
+            if (task.gid) {
+              taskMap.set(task.gid, task);
+            }
+          });
+
+          const allTasks = Array.from(taskMap.values());
+
+          // Filter tasks modified in the last 7 days (safety check, though API should handle it)
+          const recent = allTasks.filter((task) => {
+            if (!task.modified_at) {
+              return false;
+            }
+            const modifiedDate = new Date(task.modified_at);
+            return modifiedDate >= sevenDaysAgo;
+          });
+
+          setState({
+            name: "selectTasks",
+            client: state.client,
+            tasks: recent,
+          });
+        })
+        .catch((err) => {
+          setError(
+            `Error fetching tasks: ${err.message || "Could not fetch tasks."}`
+          );
         });
     }
   }, [state, me]);
@@ -271,25 +353,40 @@ const App = () => {
     }
   };
 
-  const handlePostComment = (value: string) => {
+  const handlePostComment = async (value: string) => {
     if (state.name === "postComment") {
       const task = state.selectedTasks[state.currentTaskIndex];
       if (!task) {
         return;
       }
       if (value === "yes") {
-        state.client.POST("/tasks/{task_gid}/stories", {
-          params: {
-            path: {
-              task_gid: task.gid!,
-            },
-          },
-          body: {
-            data: {
-              text: state.comment,
-            },
-          },
+        setState({
+          name: "postingComment",
+          client: state.client,
+          selectedTasks: state.selectedTasks,
+          workedOnTasks: state.workedOnTasks,
+          currentTaskIndex: state.currentTaskIndex,
+          status: state.status,
+          comment: state.comment,
         });
+
+        try {
+          await state.client.POST("/tasks/{task_gid}/stories", {
+            params: {
+              path: {
+                task_gid: task.gid!,
+              },
+            },
+            body: {
+              data: {
+                text: state.comment,
+              },
+            },
+          });
+        } catch (e) {
+          setError(`Failed to post comment: ${(e as Error).message}`);
+          return;
+        }
       }
       const newWorkedOnTasks = [
         ...state.workedOnTasks,
@@ -316,7 +413,11 @@ const App = () => {
   const handleCopyToClipboard = (value: string) => {
     if (value === "yes" && state.name === "summary") {
       const table = generateSummaryTable(state.workedOnTasks);
-      clipboardy.writeSync(table);
+      try {
+        clipboardy.writeSync(table);
+      } catch (e) {
+        console.error("Failed to copy to clipboard:", (e as Error).message);
+      }
     }
     exit(0);
   };
@@ -443,6 +544,15 @@ const App = () => {
           ]}
           onChange={handlePostComment}
         />
+      </Box>
+    );
+  }
+
+  if (state.name === "postingComment") {
+    return (
+      <Box>
+        <Spinner type="dots" />
+        <Text> Posting comment...</Text>
       </Box>
     );
   }
