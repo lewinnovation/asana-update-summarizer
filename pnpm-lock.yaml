@@ -10,7 +10,7 @@ importers:
     dependencies:
       '@inkjs/ui':
         specifier: ^2.0.0
-        version: 2.0.0(ink@6.3.1(@types/react@19.2.2)(react@19.2.0))
+        version: 2.0.0(ink@6.3.1(@types/react@19.2.2)(react-devtools-core@7.0.0)(react@19.2.0))
       '@types/react':
         specifier: ^19.2.2
         version: 19.2.2
@@ -19,10 +19,10 @@ importers:
         version: 5.0.0
       ink:
         specifier: ^6.3.1
-        version: 6.3.1(@types/react@19.2.2)(react@19.2.0)
+        version: 6.3.1(@types/react@19.2.2)(react-devtools-core@7.0.0)(react@19.2.0)
       ink-table:
         specifier: github:brainhubeu/ink-table
-        version: https://codeload.github.com/brainhubeu/ink-table/tar.gz/41d7620e2160e4d685abe375fb0e22db0f9668c7(ink@6.3.1(@types/react@19.2.2)(react@19.2.0))(react@19.2.0)
+        version: https://codeload.github.com/brainhubeu/ink-table/tar.gz/41d7620e2160e4d685abe375fb0e22db0f9668c7(ink@6.3.1(@types/react@19.2.2)(react-devtools-core@7.0.0)(react@19.2.0))(react@19.2.0)
       openapi-fetch:
         specifier: ^0.14.1
         version: 0.14.1
@@ -32,6 +32,9 @@ importers:
       react:
         specifier: ^19.2.0
         version: 19.2.0
+      react-devtools-core:
+        specifier: ^7.0.0
+        version: 7.0.0
     devDependencies:
       '@types/node':
         specifier: ^24.7.0
@@ -548,6 +551,9 @@ packages:
     resolution: {integrity: sha512-gjVS5hOP+M3wMm5nmNOucbIrqudzs9v/57bWRHQWLYklXqoXKrVfYW2W9+glfGsqtPgpiz5WwyEEB+ksXIx3gQ==}
     engines: {node: '>=18'}
 
+  react-devtools-core@7.0.0:
+    resolution: {integrity: sha512-PrvNhTqVMuY7dDRJGg9lfP/66AcnToVOLX4+qXjXEBnSAMcEhdaNkCoEYIpOLMtspbbW71vioYKYnckpQ7KISQ==}
+
   react-reconciler@0.32.0:
     resolution: {integrity: sha512-2NPMOzgTlG0ZWdIf3qG+dcbLSoAc/uLfOwckc3ofy5sSK0pLJqnQLpUFxvGcN2rlXSjnVtGeeFLNimCQEj5gOQ==}
     engines: {node: '>=0.10.0'}
@@ -579,6 +585,10 @@ packages:
   shebang-regex@3.0.0:
     resolution: {integrity: sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==}
     engines: {node: '>=8'}
+
+  shell-quote@1.8.3:
+    resolution: {integrity: sha512-ObmnIF4hXNg1BqhnHmgbDETF8dLPCggZWBjkQfhZpbszZnYur5DUljTcCHii5LC3J5E0yeO/1LIMyH+UvHQgyw==}
+    engines: {node: '>= 0.4'}
 
   signal-exit@3.0.7:
     resolution: {integrity: sha512-wnD2ZE+l+SPC/uoS0vXeE9L1+0wuaMqKlfz9AMUo38JsyLSBWSFcHR1Rri62LZc12vLr1gb3jl7iwQhgwpAbGQ==}
@@ -655,6 +665,18 @@ packages:
   wrap-ansi@9.0.2:
     resolution: {integrity: sha512-42AtmgqjV+X1VpdOfyTGOYRi0/zsoLqtXQckTmqTeybT+BDIbM/Guxo7x3pE2vtpr1ok6xRqM9OpBe+Jyoqyww==}
     engines: {node: '>=18'}
+
+  ws@7.5.10:
+    resolution: {integrity: sha512-+dbF1tHwZpXcbOJdVOkzLDxZP1ailvSxM6ZweXTegylPny803bFhA+vqBYw4s31NSAk4S2Qz+AKXK9a4wkdjcQ==}
+    engines: {node: '>=8.3.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: ^5.0.2
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
 
   ws@8.18.3:
     resolution: {integrity: sha512-PEIGCY5tSlUt50cqyMXfCzX+oOPqN0vuGqWzbcJ2xvnkzkq46oOpz7dQaTDBdfICb4N14+GARUDw2XV2N4tvzg==}
@@ -775,13 +797,13 @@ snapshots:
   '@esbuild/win32-x64@0.25.10':
     optional: true
 
-  '@inkjs/ui@2.0.0(ink@6.3.1(@types/react@19.2.2)(react@19.2.0))':
+  '@inkjs/ui@2.0.0(ink@6.3.1(@types/react@19.2.2)(react-devtools-core@7.0.0)(react@19.2.0))':
     dependencies:
       chalk: 5.6.2
       cli-spinners: 3.3.0
       deepmerge: 4.3.1
       figures: 6.1.0
-      ink: 6.3.1(@types/react@19.2.2)(react@19.2.0)
+      ink: 6.3.1(@types/react@19.2.2)(react-devtools-core@7.0.0)(react@19.2.0)
 
   '@redocly/ajv@8.11.3':
     dependencies:
@@ -973,13 +995,13 @@ snapshots:
 
   index-to-position@1.2.0: {}
 
-  ink-table@https://codeload.github.com/brainhubeu/ink-table/tar.gz/41d7620e2160e4d685abe375fb0e22db0f9668c7(ink@6.3.1(@types/react@19.2.2)(react@19.2.0))(react@19.2.0):
+  ink-table@https://codeload.github.com/brainhubeu/ink-table/tar.gz/41d7620e2160e4d685abe375fb0e22db0f9668c7(ink@6.3.1(@types/react@19.2.2)(react-devtools-core@7.0.0)(react@19.2.0))(react@19.2.0):
     dependencies:
-      ink: 6.3.1(@types/react@19.2.2)(react@19.2.0)
+      ink: 6.3.1(@types/react@19.2.2)(react-devtools-core@7.0.0)(react@19.2.0)
       object-hash: 2.2.0
       react: 19.2.0
 
-  ink@6.3.1(@types/react@19.2.2)(react@19.2.0):
+  ink@6.3.1(@types/react@19.2.2)(react-devtools-core@7.0.0)(react@19.2.0):
     dependencies:
       '@alcalzone/ansi-tokenize': 0.2.0
       ansi-escapes: 7.1.1
@@ -1007,6 +1029,7 @@ snapshots:
       yoga-layout: 3.2.1
     optionalDependencies:
       '@types/react': 19.2.2
+      react-devtools-core: 7.0.0
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -1110,6 +1133,14 @@ snapshots:
     dependencies:
       parse-ms: 4.0.0
 
+  react-devtools-core@7.0.0:
+    dependencies:
+      shell-quote: 1.8.3
+      ws: 7.5.10
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+
   react-reconciler@0.32.0(react@19.2.0):
     dependencies:
       react: 19.2.0
@@ -1133,6 +1164,8 @@ snapshots:
       shebang-regex: 3.0.0
 
   shebang-regex@3.0.0: {}
+
+  shell-quote@1.8.3: {}
 
   signal-exit@3.0.7: {}
 
@@ -1198,6 +1231,8 @@ snapshots:
       ansi-styles: 6.2.3
       string-width: 7.2.0
       strip-ansi: 7.1.2
+
+  ws@7.5.10: {}
 
   ws@8.18.3: {}
 
